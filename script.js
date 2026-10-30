@@ -1,7 +1,7 @@
 /* ===== EDIT THIS ===== */
 const CONFIG = {
-  whatsapp: "255700000000",   // international format, digits only
-  email: "hello@example.com"
+  whatsapp: "255741643130",   // international format, digits only
+  email: "johnamani67@gmail.com"
 };
 
 /* ===== Preloader: light flows along the still infinity, then fades out ===== */
