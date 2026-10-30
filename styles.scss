@@ -1,0 +1,219 @@
+// John Mgonja Books | compile with: sass styles.scss styles.css
+
+// ---------- Tokens ----------
+$slate: #0f172a;
+$obsidian: #020617;
+$gold: #f59e0b;
+$gold-soft: #fbbf24;
+$gold-pale: #fde68a;
+$text: #e2e8f0;
+$muted: #94a3b8;
+$line: rgba($gold, 0.18);
+$bp-md: 860px;
+
+@mixin md { @media (max-width: $bp-md) { @content; } }
+@mixin glass {
+  background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.1);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 24px;
+}
+
+// ---------- Base ----------
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: $obsidian;
+  color: $text;
+  line-height: 1.65;
+  overflow-x: hidden;
+  &.loading { overflow: hidden; }
+}
+h1, h2, h3 { font-family: 'Playfair Display', serif; line-height: 1.15; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid $gold; outline-offset: 3px; }
+img { display: block; max-width: 100%; height: auto; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+section { padding: 96px 0; @include md { padding: 72px 0; } }
+
+// ---------- Preloader: still infinity, light flows along the line ----------
+#preloader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: $obsidian;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .9s ease, visibility .9s ease;
+  &.done { opacity: 0; visibility: hidden; }
+  svg { width: min(280px, 64vw); height: auto; overflow: visible; }
+  use { fill: none; stroke-linecap: round; }
+  .track { stroke: rgba($gold, .2); stroke-width: 4; }
+  .tail {
+    stroke: $gold; stroke-width: 4; stroke-dasharray: 26 74; opacity: .55;
+    filter: drop-shadow(0 0 6px $gold);
+    animation: flow-tail 2.4s linear infinite;
+  }
+  .head {
+    stroke: $gold-pale; stroke-width: 5; stroke-dasharray: 5 95;
+    filter: drop-shadow(0 0 5px $gold) drop-shadow(0 0 14px $gold);
+    animation: flow-head 2.4s linear infinite;
+  }
+}
+@keyframes flow-tail { from { stroke-dashoffset: 0; }   to { stroke-dashoffset: -100; } }
+@keyframes flow-head { from { stroke-dashoffset: -21; } to { stroke-dashoffset: -121; } }
+
+// ---------- Header ----------
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  border-bottom: 1px solid transparent;
+  transition: background .3s, border-color .3s;
+  &.scrolled {
+    background: rgba($obsidian, .82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-color: $line;
+  }
+}
+.nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+.logo {
+  font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.3rem;
+  span {
+    background: linear-gradient(90deg, $gold, $gold-soft);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+}
+.links {
+  display: flex; gap: 34px; list-style: none;
+  a {
+    font-size: .95rem; color: $muted; position: relative; transition: color .25s;
+    &::after { content: ""; position: absolute; left: 0; bottom: -6px; width: 0; height: 2px; background: $gold; transition: width .3s; }
+    &:hover { color: $gold-soft; &::after { width: 100%; } }
+  }
+}
+.burger { display: none; background: none; border: 0; color: $text; font-size: 1.5rem; cursor: pointer; }
+
+@include md {
+  .burger { display: block; }
+  .links {
+    position: fixed; top: 72px; left: 0; right: 0;
+    flex-direction: column; gap: 0;
+    background: rgba($obsidian, .97);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid $line;
+    max-height: 0; overflow: hidden; transition: max-height .4s;
+    &.open { max-height: 380px; }
+    a { display: block; padding: 18px 24px; border-top: 1px solid $line; &::after { display: none; } }
+  }
+}
+
+// ---------- Buttons ----------
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px 30px; border-radius: 999px; font-weight: 600; font-size: .97rem;
+  border: 1px solid transparent; cursor: pointer;
+  transition: transform .25s, box-shadow .25s, background .25s, color .25s;
+}
+.btn-gold {
+  background: linear-gradient(135deg, $gold, $gold-soft); color: $obsidian;
+  box-shadow: 0 10px 30px -8px rgba($gold, .6);
+  &:hover { transform: translateY(-3px); box-shadow: 0 16px 36px -8px rgba($gold, .8); }
+}
+
+// ---------- Hero ----------
+.hero {
+  min-height: 100vh; display: flex; align-items: center; padding: 120px 0 80px;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba($gold, .16), transparent 55%),
+    radial-gradient(ellipse at 90% 90%, rgba($gold-soft, .08), transparent 50%),
+    $obsidian;
+  .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; @include md { grid-template-columns: 1fr; gap: 40px; } }
+  h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 800; margin-bottom: 22px; em { font-style: italic; font-weight: 500; color: $gold; } }
+  p { font-size: 1.15rem; color: $muted; max-width: 520px; margin-bottom: 36px; }
+}
+.glass { @include glass; }
+.hero-card {
+  padding: 38px; position: relative;
+  &::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 24px; padding: 1px; pointer-events: none;
+    background: linear-gradient(140deg, rgba($gold, .5), transparent 40%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  blockquote { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-style: italic; margin-bottom: 18px; }
+  cite { color: $gold; font-style: normal; font-size: .92rem; }
+}
+.stats {
+  display: flex; gap: 28px; margin-top: 28px; padding-top: 24px; border-top: 1px solid $line;
+  b { display: block; font-family: 'Playfair Display', serif; font-size: 1.9rem; color: $gold-soft; }
+  span { font-size: .85rem; color: $muted; }
+}
+
+// ---------- Section titles ----------
+.title {
+  margin-bottom: 56px;
+  h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 14px; }
+  p { color: $muted; max-width: 560px; }
+  &::after { content: ""; display: block; width: 64px; height: 3px; background: $gold; margin-top: 22px; border-radius: 2px; }
+}
+
+// ---------- Books ----------
+#books { background: $slate; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 28px; }
+.book {
+  display: flex; flex-direction: column; padding: 22px;
+  background: $obsidian; border: 1px solid $line; border-radius: 20px;
+  transition: transform .35s, border-color .35s, box-shadow .35s;
+  &:hover { transform: translateY(-8px); border-color: $gold; box-shadow: 0 24px 50px -20px rgba($gold, .35); }
+  img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 10px; margin-bottom: 22px; box-shadow: 0 14px 30px -12px rgba(0,0,0,.8); }
+  h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  p { color: $muted; font-size: .92rem; margin-bottom: 22px; flex: 1; }
+}
+.actions {
+  display: grid; gap: 10px;
+  .btn { padding: 12px 16px; font-size: .9rem; border-radius: 12px; }
+}
+.btn-amz { background: $gold; color: $obsidian; &:hover { background: $gold-soft; } }
+.btn-wa { border-color: #25d366; color: #25d366; &:hover { background: #25d366; color: $obsidian; } }
+
+// ---------- About ----------
+.about {
+  display: grid; grid-template-columns: .8fr 1.2fr; gap: 64px; align-items: center;
+  @include md { grid-template-columns: 1fr; gap: 40px; }
+  p { color: $muted; margin-bottom: 18px; font-size: 1.05rem; }
+  .title { margin-bottom: 28px; }
+}
+.portrait {
+  @include glass; overflow: hidden;
+  img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+}
+.tags {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px;
+  span { padding: 8px 18px; border: 1px solid $line; border-radius: 999px; font-size: .88rem; color: $gold-soft; background: rgba($gold, .06); }
+}
+
+// ---------- Contact & socials ----------
+#contact {
+  background: $slate; text-align: center;
+  .title { &::after { margin: 22px auto 0; } p { margin: 0 auto; } }
+}
+.mail { display: inline-block; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: $gold-soft; margin-bottom: 56px; border-bottom: 1px solid $line; padding-bottom: 4px; }
+#socials h3 { font-size: 1.3rem; margin-bottom: 26px; }
+.social-row {
+  display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+  a {
+    width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-size: 1.4rem;
+    border: 1px solid $line; background: $obsidian;
+    transition: transform .3s, background .3s, color .3s, box-shadow .3s;
+    &:hover { transform: translateY(-8px) rotate(-8deg) scale(1.08); background: $gold; color: $obsidian; box-shadow: 0 14px 30px -8px rgba($gold, .7); }
+  }
+}
+footer { padding: 30px 0; text-align: center; font-size: .88rem; color: $muted; border-top: 1px solid $line; background: $obsidian; }
+
+// ---------- Reveal ----------
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s, transform .8s; &.in { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; }
+}
