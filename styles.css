@@ -105,3 +105,130 @@ footer { padding: 30px 0; text-align: center; font-size: .88rem; color: #94a3b8;
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ===== JOHN MGONJA BOOKS - CINEMATIC HERO ===== */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 120px 0 80px;
+  background: #020617;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: url("images/human-mind-hero.png");
+  background-size: cover;
+  background-position: center 43%;
+  transform: scale(1.04);
+  animation: heroKenBurns 24s ease-in-out infinite alternate;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 6, 23, .96) 0%,
+      rgba(2, 6, 23, .82) 38%,
+      rgba(2, 6, 23, .28) 72%,
+      rgba(2, 6, 23, .25) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(2, 6, 23, .55),
+      transparent 45%
+    );
+}
+
+.hero .wrap {
+  display: block;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content {
+  max-width: 680px;
+}
+
+.hero p {
+  color: #e2e8f0;
+  text-shadow: 0 2px 12px rgba(0,0,0,.8);
+}
+
+.hero-card {
+  max-width: 530px;
+  margin-top: 35px;
+  background: rgba(2, 6, 23, .65);
+  border-color: rgba(245, 158, 11, .35);
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+
+@keyframes heroKenBurns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.13);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 860px) {
+  .hero {
+    min-height: 100svh;
+    padding: 110px 0 65px;
+  }
+
+  .hero::before {
+    background-position: 58% center;
+  }
+
+  .hero::after {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(2,6,23,.91),
+        rgba(2,6,23,.60)
+      ),
+      linear-gradient(
+        0deg,
+        rgba(2,6,23,.65),
+        transparent
+      );
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+
+  .hero-card {
+    margin-top: 28px;
+    padding: 24px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .hero::before {
+    animation: none;
+  }
+}
+
