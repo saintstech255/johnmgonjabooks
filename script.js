@@ -66,3 +66,43 @@ const io = new IntersectionObserver(function (entries) {
   });
 }, { threshold: 0.12 });
 document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+// Orodha ya vitabu vya waandishi wengine unavyosoma
+const otherAuthorsBooks = [
+  {
+    title: "The 48 Laws of Power",
+    author: "Robert Greene",
+    status: "Ninachokisoma Sasa",
+    cover: "images/48-laws.jpg", // Badilisha iendane na folder lako la picha
+    note: "Kitabu kizuri sana kinachofungua akili kuhusu saikolojia ya mahusiano ya watu, mamlaka, na mikakati.",
+    link: "#" // Unaweza kuweka link ya maelezo zaidi au kuacha #
+  },
+  {
+    title: "Atomic Habits",
+    author: "James Clear",
+    status: "Nimekisoma & Nakipendekeza",
+    cover: "images/atomic-habits.jpg",
+    note: "Jinsi mabadiliko madogo ya kila siku yanavyoleta matokeo makubwa kwenye maisha na mafanikio.",
+    link: "#"
+  }
+];
+
+// Function ya kuingiza vitabu kwenye HTML
+function renderOtherBooks() {
+  const grid = document.getElementById("recommended-books-grid");
+  if (!grid) return;
+
+  grid.innerHTML = otherAuthorsBooks.map(book => `
+    <div class="other-book-card">
+      <span class="badge">${book.status}</span>
+      <img src="${book.cover}" alt="${book.title}" class="book-cover" />
+      <h3>${book.title}</h3>
+      <p class="author-name">Na ${book.author}</p>
+      <p class="book-note">${book.note}</p>
+      ${book.link !== "#" ? `<a href="${book.link}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Soma Dondoo</a>` : ""}
+    </div>
+  `).join("");
+}
+
+// Iite function ukurasa ukifunguka
+document.addEventListener("DOMContentLoaded", renderOtherBooks);
