@@ -72,26 +72,26 @@ const otherAuthorsBooks = [
   {
     title: "The Mountain Is You",
     author: "Briana Wiest",
-    status: "Ninachokisoma Sasa",
+    status: "I recomend this to you",
     cover: "images/the-mountain-is-you.jpg", // Hakikisha picha ipo kwenye folder la images
     note: "Transforming self-sabotage into self-mastery. A profound look at how we stand in our own way.",
-    link: "#" // Baadaye unaweza kuweka link ya Selar au sehemu ya kupata
+    link: "https://selar.com/2918240969"
   },
   {
-    title: "The 48 Laws of Power",
-    author: "Robert Greene",
+    title: "Neuro Mancer",
+    author: "William Gibson",
     status: "Nimekisoma & Nakipendekeza",
-    cover: "images/48-laws.jpg", 
-    note: "Kitabu kizuri sana kinachofungua akili kuhusu saikolojia ya mahusiano ya watu, mamlaka, na mikakati.",
-    link: "#" 
+    cover: "images/neuro-mancer.jpg", 
+    note: "Neuromancer is a landmark 1984 science fiction novel by William Gibson that defined the cyberpunk genre and popularized the concept of cyberspace.",
+    link: "https://selar.com/133y910ka7" 
   },
   {
     title: "Atomic Habits",
     author: "James Clear",
     status: "Nimekisoma & Nakipendekeza",
     cover: "images/atomic-habits.jpg",
-    note: "Jinsi mabadiliko madogo ya kila siku yanavyoleta matokeo makubwa kwenye maisha na mafanikio.",
-    link: "#"
+    note: "Atomic Habits is a 2018 self-help bestseller by James Clear that breaks down how tiny, incremental daily changes compound into remarkable long-term results.",
+    link: "https://selar.com/30790870n4"
   }
 ];
 
