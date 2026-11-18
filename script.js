@@ -27,8 +27,8 @@ const CONFIG = {
   setTimeout(onReady, 6000);  // safety fallback
 })();
 
-/* ===== WhatsApp pre-filled order links ===== */
-document.querySelectorAll(".book").forEach(function (card) {
+/* ===== WhatsApp pre-filled order links (Only for your books) ===== */
+document.querySelectorAll("#books .book").forEach(function (card) {
   const title = card.dataset.title;
   const msg = 'Hello John, I would like to order the book "' + title + '". Please share the price and delivery details.';
   const link = card.querySelector("[data-wa]");
@@ -67,15 +67,23 @@ const io = new IntersectionObserver(function (entries) {
 }, { threshold: 0.12 });
 document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
 
-// Orodha ya vitabu vya waandishi wengine unavyosoma
+// Orodha ya vitabu vya waandishi wengine (Books by Other Authors)
 const otherAuthorsBooks = [
+  {
+    title: "The Mountain Is You",
+    author: "Briana Wiest",
+    status: "Ninachokisoma Sasa",
+    cover: "images/the-mountain-is-you.jpg", // Hakikisha picha ipo kwenye folder la images
+    note: "Transforming self-sabotage into self-mastery. A profound look at how we stand in our own way.",
+    link: "#" // Baadaye unaweza kuweka link ya Selar au sehemu ya kupata
+  },
   {
     title: "The 48 Laws of Power",
     author: "Robert Greene",
-    status: "Ninachokisoma Sasa",
-    cover: "images/48-laws.jpg", // Badilisha iendane na folder lako la picha
+    status: "Nimekisoma & Nakipendekeza",
+    cover: "images/48-laws.jpg", 
     note: "Kitabu kizuri sana kinachofungua akili kuhusu saikolojia ya mahusiano ya watu, mamlaka, na mikakati.",
-    link: "#" // Unaweza kuweka link ya maelezo zaidi au kuacha #
+    link: "#" 
   },
   {
     title: "Atomic Habits",
@@ -87,21 +95,30 @@ const otherAuthorsBooks = [
   }
 ];
 
-// Function ya kuingiza vitabu kwenye HTML
+// Function ya kuingiza vitabu vya waandishi wengine kwenye grid ile ile ya website
 function renderOtherBooks() {
   const grid = document.getElementById("recommended-books-grid");
   if (!grid) return;
 
   grid.innerHTML = otherAuthorsBooks.map(book => `
-    <div class="other-book-card">
-      <span class="badge">${book.status}</span>
-      <img src="${book.cover}" alt="${book.title}" class="book-cover" />
+    <article class="book reveal" data-title="${book.title}">
+      <img src="${book.cover}" alt="Cover of ${book.title}" width="600" height="900" loading="lazy">
       <h3>${book.title}</h3>
-      <p class="author-name">Na ${book.author}</p>
-      <p class="book-note">${book.note}</p>
-      ${book.link !== "#" ? `<a href="${book.link}" target="_blank" rel="noopener noreferrer" class="read-more-btn">Soma Dondoo</a>` : ""}
-    </div>
+      <p><strong>By ${book.author}</strong> • <em>${book.status}</em><br><br>${book.note}</p>
+      ${book.link !== "#" ? `
+        <div class="actions">
+          <a class="btn btn-amz" href="${book.link}" target="_blank" rel="noopener">
+            <i class="fa-solid fa-bag-shopping"></i> Get Book
+          </a>
+        </div>
+      ` : ""}
+    </article>
   `).join("");
+
+  // Washa tena Intersection Observer kwenye kadi mpya zilizoingizwa na JS
+  document.querySelectorAll("#recommended-books-grid .reveal").forEach(function (el) {
+    io.observe(el);
+  });
 }
 
 // Iite function ukurasa ukifunguka
