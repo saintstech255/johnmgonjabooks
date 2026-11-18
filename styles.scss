@@ -217,3 +217,109 @@ footer { padding: 30px 0; text-align: center; font-size: .88rem; color: $muted; 
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; }
 }
+.other-authors-section {
+  padding: 5rem 1.5rem;
+  background: rgba(15, 23, 42, 0.95); // Badilisha kulingana na rangi ya website yako
+  color: #f8fafc;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 3.5rem;
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+    }
+
+    p {
+      color: #94a3b8;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .other-book-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+
+    &:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .badge {
+      align-self: flex-start;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .book-cover {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .author-name {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 0.85rem;
+      font-style: italic;
+    }
+
+    .book-note {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      flex-grow: 1;
+      margin-bottom: 1.25rem;
+    }
+
+    .read-more-btn {
+      display: inline-block;
+      text-align: center;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
