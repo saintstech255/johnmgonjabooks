@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel | John Mgonja Books</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg: #080b12;
+      --card: #101624;
+      --card-border: rgba(255, 255, 255, 0.09);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --gold: #eab308;
+      --gold-hover: #facc15;
+      --danger: #ef4444;
+      --success: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 2rem 1rem 4rem;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #151e33 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .brand {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .brand span { color: var(--gold); }
+
+    .back-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    h1, h2 {
+      font-family: "Playfair Display", Georgia, serif;
+      margin: 0 0 0.5rem;
+      font-size: 1.45rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0 0 1.25rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.9rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 0.35rem;
+      padding: 0.72rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #090d16;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.94rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .btn-submit {
+      margin-top: 1.4rem;
+      width: 100%;
+      padding: 0.88rem 1.2rem;
+      border: none;
+      border-radius: 10px;
+      background: var(--gold);
+      color: #090d16;
+      font-weight: 700;
+      font-size: 0.96rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover { background: var(--gold-hover); }
+
+    .status-msg {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      min-height: 1.2rem;
+    }
+
+    .book-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .book-row:last-child { border-bottom: none; }
+
+    .book-meta small {
+      color: var(--muted);
+      display: inline-block;
+      margin-top: 0.25rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.74rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--gold);
+      margin-left: 0.4rem;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.14);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .btn-delete:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <a href="index.html" class="brand">John Mgonja <span>Admin</span></a>
+      <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> View Live Website</a>
+    </div>
+
+    <div class="panel">
+      <h1>Add New Book</h1>
+      <p class="subtitle">Publish directly to Cloudflare D1 and update the live site automatically.</p>
+
+      <form id="bookForm">
+        <div class="grid-2">
+          <div>
+            <label for="token">Admin Token</label>
+            <input type="password" id="token" required placeholder="Enter ADMIN_TOKEN" />
+          </div>
+          <div>
+            <label for="section">Target Section</label>
+            <select id="section">
+              <option value="my_books">The Books (My Books)</option>
+              <option value="other_authors">Books by Other Authors</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="title">Book Title</label>
+            <input type="text" id="title" required placeholder="e.g. Inside the Human Mind" />
+          </div>
+          <div>
+            <label for="author">Author Name</label>
+            <input type="text" id="author" required placeholder="e.g. John Mgonja" />
+          </div>
+        </div>
+
+        <label for="status">Reading / Status Label (Optional)</label>
+        <input type="text" id="status" placeholder="e.g. Currently Reading / Recommended" />
+
+        <label for="description">Description</label>
+        <textarea id="description" rows="3" required placeholder="Short summary or personal note about the book..."></textarea>
+
+        <div class="grid-2">
+          <div>
+            <label for="cover_url">Cover Image Path or URL</label>
+            <input type="text" id="cover_url" required placeholder="e.g. images/book-cover.jpg" />
+          </div>
+          <div>
+            <label for="buy_url">Selar / Buy Link</label>
+            <input type="url" id="buy_url" required placeholder="https://selar.com/..." />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Save Book to Database
+        </button>
+        <div class="status-msg" id="statusMsg"></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Books in Database</h2>
+      <p class="subtitle">Manage items currently stored in D1.</p>
+      <div id="adminBookList">Loading books...</div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("bookForm");
+    const statusMsg = document.getElementById("statusMsg");
+    const listEl = document.getElementById("adminBookList");
+    const tokenInput = document.getElementById("token");
+
+    tokenInput.value = sessionStorage.getItem("jm_admin_token") || "";
+    tokenInput.addEventListener("input", () => {
+      sessionStorage.setItem("jm_admin_token", tokenInput.value);
+    });
+
+    async function loadAdminBooks() {
+      try {
+        const res = await fetch("/api/books");
+        if (!res.ok) {
+          listEl.innerHTML = "<p>Could not load books from /api/books yet.</p>";
+          return;
+        }
+        const data = await res.json();
+        const books = data.books || [];
+
+        if (!books.length) {
+          listEl.innerHTML = "<p>No books saved in D1 yet. Add your first book above.</p>";
+          return;
+        }
+
+        listEl.innerHTML = books.map(b => `
+          <div class="book-row">
+            <div class="book-meta">
+              <strong>${b.title}</strong>
+              <span class="badge">${b.section === "other_authors" ? "Other Authors" : "My Books"}</span><br/>
+              <small>By ${b.author}${b.status ? " • " + b.status : ""} • Cover: ${b.cover_url}</small>
+            </div>
+            <button type="button" class="btn-delete" onclick="deleteBook(${b.id})">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </div>
+        `).join("");
+      } catch (err) {
+        listEl.innerHTML = "<p>API unreachable. Check your Cloudflare Worker deployment.</p>";
+      }
+    }
+
+    window.deleteBook = async function(id) {
+      const token = tokenInput.value.trim();
+      if (!token) {
+        alert("Please enter your Admin Token first.");
+        return;
+      }
+
+      const res = await fetch("/api/books/" + id, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      if (res.ok) {
+        loadAdminBooks();
+      } else {
+        alert("Delete failed. Check your Admin Token.");
+      }
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusMsg.style.color = "#eab308";
+      statusMsg.textContent = "Saving book...";
+
+      const payload = {
+        section: document.getElementById("section").value,
+        title: document.getElementById("title").value.trim(),
+        author: document.getElementById("author").value.trim(),
+        status: document.getElementById("status").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        cover_url: document.getElementById("cover_url").value.trim(),
+        buy_url: document.getElementById("buy_url").value.trim()
+      };
+
+      try {
+        const res = await fetch("/api/books", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + tokenInput.value.trim()
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          statusMsg.style.color = "#22c55e";
+          statusMsg.textContent = "Saved! The book is now live on your site.";
+          form.reset();
+          tokenInput.value = sessionStorage.getItem("jm_admin_token") || "";
+          loadAdminBooks();
+        } else {
+          statusMsg.style.color = "#f87171";
+          statusMsg.textContent = data.error || "Failed to save book.";
+        }
+      } catch (err) {
+        statusMsg.style.color = "#f87171";
+        statusMsg.textContent = "Network error while saving.";
+      }
+    });
+
+    loadAdminBooks();
+  </script>
+</body>
+</html>
