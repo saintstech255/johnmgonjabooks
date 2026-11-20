@@ -1,0 +1,11 @@
+name = "johnmgonjabooks-api"
+main = "worker.js"
+compatibility_date = "2026-11-20"
+
+[assets]
+directory = "./"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "johnmgonja-books-db"
+database_id = "WEKA_DATABASE_ID_YAKO_HAPA"
