@@ -118,9 +118,58 @@
       font-size: 0.94rem;
     }
 
+    input[type="file"] {
+      padding: 0.55rem;
+      background: rgba(234, 179, 8, 0.05);
+      border-style: dashed;
+      border-color: rgba(234, 179, 8, 0.35);
+    }
+
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--gold);
+    }
+
+    .cover-box {
+      margin-top: 0.9rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .cover-preview-wrap {
+      width: 120px;
+      aspect-ratio: 600 / 900;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .cover-preview-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cover-controls {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
     }
 
     .btn-submit {
@@ -238,16 +287,22 @@
         <label for="description">Description</label>
         <textarea id="description" rows="3" required placeholder="Short summary or personal note about the book..."></textarea>
 
-        <div class="grid-2">
-          <div>
-            <label for="cover_url">Cover Image Path or URL</label>
-            <input type="text" id="cover_url" required placeholder="e.g. images/book-cover.jpg" />
+        <label>Book Cover Image (Auto-formatted to 600×900 Cover Ratio)</label>
+        <div class="cover-box">
+          <div class="cover-preview-wrap" id="coverPreviewBox">
+            <span>600×900<br/>Preview</span>
           </div>
-          <div>
-            <label for="buy_url">Selar / Buy Link</label>
-            <input type="url" id="buy_url" required placeholder="https://selar.com/..." />
+          <div class="cover-controls">
+            <input type="file" id="coverFile" accept="image/*" />
+            <div class="hint">Upload an image from your device — it will be cropped &amp; resized to 600×900 automatically.</div>
+
+            <label for="cover_url" style="margin-top: 0.75rem;">Or Cover Image Path / URL</label>
+            <input type="text" id="cover_url" required placeholder="e.g. images/book-cover.jpg or auto-filled after upload" />
           </div>
         </div>
+
+        <label for="buy_url">Selar / Buy Link</label>
+        <input type="url" id="buy_url" required placeholder="https://selar.com/..." />
 
         <button type="submit" class="btn-submit">
           <i class="fa-solid fa-cloud-arrow-up"></i> Save Book to Database
@@ -264,14 +319,92 @@
   </div>
 
   <script>
+    const TARGET_WIDTH = 600;
+    const TARGET_HEIGHT = 900;
+
     const form = document.getElementById("bookForm");
     const statusMsg = document.getElementById("statusMsg");
     const listEl = document.getElementById("adminBookList");
     const tokenInput = document.getElementById("token");
+    const coverFileInput = document.getElementById("coverFile");
+    const coverUrlInput = document.getElementById("cover_url");
+    const coverPreviewBox = document.getElementById("coverPreviewBox");
 
     tokenInput.value = sessionStorage.getItem("jm_admin_token") || "";
     tokenInput.addEventListener("input", () => {
       sessionStorage.setItem("jm_admin_token", tokenInput.value);
+    });
+
+    function updatePreview(src) {
+      if (!src) {
+        coverPreviewBox.innerHTML = "<span>600×900<br/>Preview</span>";
+        return;
+      }
+      coverPreviewBox.innerHTML = `<img src="${src}" alt="Cover preview" />`;
+    }
+
+    coverUrlInput.addEventListener("input", () => {
+      updatePreview(coverUrlInput.value.trim());
+    });
+
+    // Badilisha picha yoyote iliyopakiwa iwe 600x900 (2:3 portrait cover format)
+    function formatCoverTo600x900(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = TARGET_WIDTH;
+            canvas.height = TARGET_HEIGHT;
+            const ctx = canvas.getContext("2d");
+
+            const targetRatio = TARGET_WIDTH / TARGET_HEIGHT; // 0.6667
+            const imgRatio = img.width / img.height;
+
+            let sx = 0, sy = 0, sw = img.width, sh = img.height;
+
+            if (imgRatio > targetRatio) {
+              // Picha pana kuliko 2:3 -> punguza kushoto/kulia (center crop)
+              sw = img.height * targetRatio;
+              sx = (img.width - sw) / 2;
+            } else if (imgRatio < targetRatio) {
+              // Picha ndefu zaidi ya 2:3 -> punguza juu/chini (center crop)
+              sh = img.width / targetRatio;
+              sy = (img.height - sh) / 2;
+            }
+
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, TARGET_WIDTH, TARGET_HEIGHT);
+
+            // Tumia JPEG quality 0.82 ili faili liwe jepesi na safi
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+            resolve(dataUrl);
+          };
+          img.onerror = () => reject(new Error("Could not read image."));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error("Could not load file."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    coverFileInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      statusMsg.style.color = "#eab308";
+      statusMsg.textContent = "Formatting cover to 600×900...";
+
+      try {
+        const formattedDataUrl = await formatCoverTo600x900(file);
+        coverUrlInput.value = formattedDataUrl;
+        updatePreview(formattedDataUrl);
+        statusMsg.style.color = "#22c55e";
+        statusMsg.textContent = "Cover formatted to 600×900 and ready.";
+      } catch (err) {
+        statusMsg.style.color = "#f87171";
+        statusMsg.textContent = err.message || "Failed to format image.";
+      }
     });
 
     async function loadAdminBooks() {
@@ -289,18 +422,23 @@
           return;
         }
 
-        listEl.innerHTML = books.map(b => `
-          <div class="book-row">
-            <div class="book-meta">
-              <strong>${b.title}</strong>
-              <span class="badge">${b.section === "other_authors" ? "Other Authors" : "My Books"}</span><br/>
-              <small>By ${b.author}${b.status ? " • " + b.status : ""} • Cover: ${b.cover_url}</small>
+        listEl.innerHTML = books.map(b => {
+          const coverLabel = b.cover_url && b.cover_url.startsWith("data:image/")
+            ? "Uploaded 600×900 Cover"
+            : b.cover_url;
+          return `
+            <div class="book-row">
+              <div class="book-meta">
+                <strong>${b.title}</strong>
+                <span class="badge">${b.section === "other_authors" ? "Other Authors" : "My Books"}</span><br/>
+                <small>By ${b.author}${b.status ? " • " + b.status : ""} • ${coverLabel}</small>
+              </div>
+              <button type="button" class="btn-delete" onclick="deleteBook(${b.id})">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
             </div>
-            <button type="button" class="btn-delete" onclick="deleteBook(${b.id})">
-              <i class="fa-solid fa-trash"></i> Delete
-            </button>
-          </div>
-        `).join("");
+          `;
+        }).join("");
       } catch (err) {
         listEl.innerHTML = "<p>API unreachable. Check your Cloudflare Worker deployment.</p>";
       }
@@ -336,7 +474,7 @@
         author: document.getElementById("author").value.trim(),
         status: document.getElementById("status").value.trim(),
         description: document.getElementById("description").value.trim(),
-        cover_url: document.getElementById("cover_url").value.trim(),
+        cover_url: coverUrlInput.value.trim(),
         buy_url: document.getElementById("buy_url").value.trim()
       };
 
@@ -356,6 +494,7 @@
           statusMsg.textContent = "Saved! The book is now live on your site.";
           form.reset();
           tokenInput.value = sessionStorage.getItem("jm_admin_token") || "";
+          updatePreview("");
           loadAdminBooks();
         } else {
           statusMsg.style.color = "#f87171";
