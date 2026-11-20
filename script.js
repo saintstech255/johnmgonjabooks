@@ -28,12 +28,16 @@ const CONFIG = {
 })();
 
 /* ===== WhatsApp pre-filled order links (Only for your books) ===== */
-document.querySelectorAll("#books .book").forEach(function (card) {
-  const title = card.dataset.title;
-  const msg = 'Hello John, I would like to order the book "' + title + '". Please share the price and delivery details.';
-  const link = card.querySelector("[data-wa]");
-  if (link) link.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg);
-});
+function attachWhatsAppLinks(root) {
+  const scope = root || document;
+  scope.querySelectorAll("#books .book").forEach(function (card) {
+    const title = card.dataset.title;
+    const msg = 'Hello John, I would like to order the book "' + title + '". Please share the price and delivery details.';
+    const link = card.querySelector("[data-wa]");
+    if (link) link.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg);
+  });
+}
+attachWhatsAppLinks(document);
 
 /* ===== Email link from config ===== */
 const mail = document.getElementById("mail");
@@ -65,15 +69,20 @@ const io = new IntersectionObserver(function (entries) {
     if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
   });
 }, { threshold: 0.12 });
-document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
 
-// Orodha ya vitabu vya waandishi wengine (Books by Other Authors)
+function observeReveals(root) {
+  const scope = root || document;
+  scope.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+}
+observeReveals(document);
+
+// Fallback list ya vitabu vya waandishi wengine (Books by Other Authors)
 const otherAuthorsBooks = [
   {
     title: "The Mountain Is You",
     author: "Briana Wiest",
     status: "I recomend this to you",
-    cover: "images/the-mountain-is-you.jpg", // Hakikisha picha ipo kwenye folder la images
+    cover: "images/the-mountain-is-you.jpg",
     note: "Transforming self-sabotage into self-mastery. A profound look at how we stand in our own way.",
     link: "https://selar.com/2918240969"
   },
@@ -81,9 +90,9 @@ const otherAuthorsBooks = [
     title: "Neuro Mancer",
     author: "William Gibson",
     status: "Nimekisoma & Nakipendekeza",
-    cover: "images/neuro-mancer.jpg", 
+    cover: "images/neuro-mancer.jpg",
     note: "Neuromancer is a landmark 1984 science fiction novel by William Gibson that defined the cyberpunk genre and popularized the concept of cyberspace.",
-    link: "https://selar.com/133y910ka7" 
+    link: "https://selar.com/133y910ka7"
   },
   {
     title: "Atomic Habits",
@@ -95,31 +104,91 @@ const otherAuthorsBooks = [
   }
 ];
 
-// Function ya kuingiza vitabu vya waandishi wengine kwenye grid ile ile ya website
-function renderOtherBooks() {
+function renderOtherBooksList(booksList) {
   const grid = document.getElementById("recommended-books-grid");
   if (!grid) return;
 
-  grid.innerHTML = otherAuthorsBooks.map(book => `
-    <article class="book reveal" data-title="${book.title}">
-      <img src="${book.cover}" alt="Cover of ${book.title}" width="600" height="900" loading="lazy">
-      <h3>${book.title}</h3>
-      <p><strong>By ${book.author}</strong> • <em>${book.status}</em><br><br>${book.note}</p>
-      ${book.link !== "#" ? `
-        <div class="actions">
-          <a class="btn btn-amz" href="${book.link}" target="_blank" rel="noopener">
-            <i class="fa-solid fa-bag-shopping"></i> Get Book
-          </a>
-        </div>
-      ` : ""}
-    </article>
-  `).join("");
+  grid.innerHTML = booksList.map(book => {
+    const cover = book.cover_url || book.cover;
+    const note = book.description || book.note;
+    const buyLink = book.buy_url || book.link || "#";
+    const meta = book.author
+      ? `<p><strong>By ${book.author}</strong>${book.status ? ` • <em>${book.status}</em>` : ""}<br><br>${note}</p>`
+      : `<p>${note}</p>`;
 
-  // Washa tena Intersection Observer kwenye kadi mpya zilizoingizwa na JS
-  document.querySelectorAll("#recommended-books-grid .reveal").forEach(function (el) {
-    io.observe(el);
-  });
+    return `
+      <article class="book reveal" data-title="${book.title}">
+        <img src="${cover}" alt="Cover of ${book.title}" width="600" height="900" loading="lazy">
+        <h3>${book.title}</h3>
+        ${meta}
+        ${buyLink && buyLink !== "#" ? `
+          <div class="actions">
+            <a class="btn btn-amz" href="${buyLink}" target="_blank" rel="noopener">
+              <i class="fa-solid fa-bag-shopping"></i> Get Book
+            </a>
+          </div>
+        ` : ""}
+      </article>
+    `;
+  }).join("");
+
+  observeReveals(grid);
 }
 
-// Iite function ukurasa ukifunguka
-document.addEventListener("DOMContentLoaded", renderOtherBooks);
+function renderMyBooksFromD1(booksList) {
+  const myBooksGrid = document.querySelector("#books .grid");
+  if (!myBooksGrid || !booksList.length) return;
+
+  myBooksGrid.innerHTML = booksList.map(book => {
+    const meta = book.author
+      ? `<p><strong>By ${book.author}</strong>${book.status ? ` • <em>${book.status}</em>` : ""}<br><br>${book.description}</p>`
+      : `<p>${book.description}</p>`;
+
+    return `
+      <article class="book reveal" data-title="${book.title}">
+        <img src="${book.cover_url}" alt="Cover of ${book.title}" width="600" height="900" loading="lazy">
+        <h3>${book.title}</h3>
+        ${meta}
+        <div class="actions">
+          <a class="btn btn-amz" href="${book.buy_url}" target="_blank" rel="noopener">
+            <i class="fa-solid fa-bag-shopping"></i> Buy Here
+          </a>
+          <a class="btn btn-wa" data-wa href="#" target="_blank" rel="noopener">
+            <i class="fa-brands fa-whatsapp"></i> Order via WhatsApp
+          </a>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  attachWhatsAppLinks(myBooksGrid);
+  observeReveals(myBooksGrid);
+}
+
+async function initBooks() {
+  // Kwanza onyesha list ya fallback ili ukurasa uwe tayari mara moja
+  renderOtherBooksList(otherAuthorsBooks);
+
+  try {
+    const res = await fetch("/api/books");
+    if (!res.ok) return;
+    const data = await res.json();
+    const books = data.books || [];
+    if (!books.length) return;
+
+    const myBooks = books.filter(b => b.section === "my_books");
+    const otherBooks = books.filter(b => b.section === "other_authors");
+
+    if (myBooks.length) {
+      renderMyBooksFromD1(myBooks);
+    }
+    if (otherBooks.length) {
+      renderOtherBooksList(otherBooks);
+    }
+  } catch (err) {
+    // Ikiwa bado huja-deploy Worker/D1 au uko offline, fallback itaendelea kufanya kazi
+    console.warn("Using fallback book list:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initBooks);
